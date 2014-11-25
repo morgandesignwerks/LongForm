@@ -1,20 +1,17 @@
 
 // Global
-longForm = function () {};
+LongForm = function () {};
 
-// Let's make some short hand to go with our long form.
-longForm.fn = longForm.prototype;
-
-longForm.fn.init = function () {
+LongForm.prototype.init = function () {
 	this.bindEvents();
 };
 
-longForm.fn.bindEvents = function() {
+LongForm.prototype.bindEvents = function() {
 	$("body").on("click", "#send", $.proxy(this.handleSendClickEvent, this));
 };
 
 // Call all our post-click events and get the string into the UI
-longForm.fn.handleSendClickEvent = function () {
+LongForm.prototype.handleSendClickEvent = function () {
 	if (this.validateInputs()) {
 		var sFormattedDollars = "";
 		this.cleanUpAndSplit();
@@ -31,7 +28,7 @@ longForm.fn.handleSendClickEvent = function () {
 };
 
 // Handle bad inputs: strings, nothing, spaces.
-longForm.fn.validateInputs = function () {
+LongForm.prototype.validateInputs = function () {
 	var success = false;
 	this.sInputNumber = $("#inputNumber").val();
 	
@@ -53,13 +50,13 @@ longForm.fn.validateInputs = function () {
 	return success;
 };
 
-longForm.fn.cleanUpAndSplit = function () {
+LongForm.prototype.cleanUpAndSplit = function () {
 	this.splitDollarsAndCents();
 	this.removeLeadingZeros();
 	this.roundOffCents();
 };
 
-longForm.fn.splitDollarsAndCents = function () {
+LongForm.prototype.splitDollarsAndCents = function () {
 	var splitAmount = this.sInputNumber.split(".");
 	this.dollars = splitAmount[0];
 	
@@ -74,11 +71,13 @@ longForm.fn.splitDollarsAndCents = function () {
 	if (this.dollars.length > 12) {
 		alert("Woah, hold on there cowboy. We only go up to billions in these parts. We'll shave that down for ya.");
 		this.dollars = this.dollars.substring(this.dollars.length - 12, this.dollars.length);
+        console.log(this.dollars);
+        $("#inputNumber").val(this.dollars);
 	}
 };
 
 // If someone types something like '000.25' we need to remove the leading zeros and get down to just one.
-longForm.fn.removeLeadingZeros = function () {
+LongForm.prototype.removeLeadingZeros = function () {
 	var sScratch = this.dollars;
 	
 	for (var i = 0; i < this.dollars.length; i++) {
@@ -97,14 +96,14 @@ longForm.fn.removeLeadingZeros = function () {
 };
 
 // Convert to a floating point number to round up, then send back only what's on the right of the decimal, as a string.
-longForm.fn.roundOffCents = function() {
+LongForm.prototype.roundOffCents = function() {
 	var nCents = parseFloat("." + this.cents).toFixed(2);
 	this.cents = nCents.toString().split(".")[1];
 };
 
 
 // Build the string using recursion one block of magnitude at a time
-longForm.fn.buildHundredsWithMagnitude = function (sNumber, iMagnitude) {
+LongForm.prototype.buildHundredsWithMagnitude = function (sNumber, iMagnitude) {
 	// Create some arrays of strings for us to grab as needed
 	var singles = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 	var teens = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
@@ -147,7 +146,7 @@ longForm.fn.buildHundredsWithMagnitude = function (sNumber, iMagnitude) {
 	
 };
 
-$(document).ready(function () {
-	longForm = new longForm();
+$(document).ready(function() {
+	var longForm = new LongForm();
 	longForm.init();
 });
